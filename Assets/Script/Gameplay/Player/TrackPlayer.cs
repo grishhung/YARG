@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using YARG.Core;
 using YARG.Core.Chart;
 using YARG.Core.Engine;
 using YARG.Gameplay.HUD;
@@ -187,18 +188,26 @@ namespace YARG.Gameplay.Player
 
         protected void UpdateBaseVisuals(BaseStats stats, double songTime)
         {
-            int maxMultiplier = stats.IsStarPowerActive ? 8 : 4;
-            bool groove = stats.ScoreMultiplier == maxMultiplier;
+            int maxMultiplier = NoteTrack.IsBass() ? 6 : 4;
+
+            if (stats.IsStarPowerActive)
+            {
+                maxMultiplier *= 2;
+            }
+
+            bool groove = stats.ScoreMultiplier >= 4;
+            bool bassGroove = stats.ScoreMultiplier == 6;
 
             TrackMaterial.SetTrackScroll(songTime, NoteSpeed);
             TrackMaterial.GrooveMode = groove;
+            TrackMaterial.BassGrooveMode = bassGroove;
             TrackMaterial.StarpowerMode = stats.IsStarPowerActive;
 
             ComboMeter.SetCombo(stats.ScoreMultiplier, maxMultiplier, stats.Combo);
             StarpowerBar.SetStarpower(stats.StarPowerAmount, stats.IsStarPowerActive);
             SunburstEffects.SetSunburstEffects(groove, stats.IsStarPowerActive);
 
-            TrackView.UpdateNoteStreak(stats.Combo);
+            TrackView.UpdateTextNotification(stats, IsFc, Notes.Count, NoteTrack.IsBass());
         }
 
         protected override void UpdateNotes(double songTime)

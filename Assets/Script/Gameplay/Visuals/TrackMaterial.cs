@@ -38,8 +38,15 @@ namespace YARG.Gameplay.Visuals
 
         private static Preset _normalPreset;
         private static Preset _groovePreset;
+        private static Preset _bassGroovePreset;
 
         private float _grooveState;
+        private float _bassGrooveState;
+        private float _dropBassGrooveState;
+
+        private bool _prevBassGrooveMode;
+
+        // Used for moving from the normal state to the standard groove state (and vice versa)
         private float GrooveState
         {
             get => _grooveState;
@@ -60,8 +67,52 @@ namespace YARG.Gameplay.Visuals
             }
         }
 
+        // Used for moving from the standard groove state to the bass groove state
+        private float BassGrooveState
+        {
+            get => _bassGrooveState;
+            set
+            {
+                _bassGrooveState = value;
+
+                _material.SetColor(_layer1ColorProperty,
+                    Color.Lerp(_groovePreset.Layer1.Color, _bassGroovePreset.Layer1.Color, value));
+                _material.SetColor(_layer2ColorProperty,
+                    Color.Lerp(_groovePreset.Layer2.Color, _bassGroovePreset.Layer2.Color, value));
+                _material.SetColor(_layer3ColorProperty,
+                    Color.Lerp(_groovePreset.Layer3.Color, _bassGroovePreset.Layer3.Color, value));
+                _material.SetColor(_layer4ColorProperty,
+                    Color.Lerp(_groovePreset.Layer4.Color, _bassGroovePreset.Layer4.Color, value));
+
+                _material.SetFloat(_wavinessProperty, value);
+            }
+        }
+
+        // Used for moving from the bass groove state to the normal state
+        private float DropBassGrooveState
+        {
+            get => _dropBassGrooveState;
+            set
+            {
+                _dropBassGrooveState = value;
+
+                _material.SetColor(_layer1ColorProperty,
+                    Color.Lerp(_normalPreset.Layer1.Color, _bassGroovePreset.Layer1.Color, value));
+                _material.SetColor(_layer2ColorProperty,
+                    Color.Lerp(_normalPreset.Layer2.Color, _bassGroovePreset.Layer2.Color, value));
+                _material.SetColor(_layer3ColorProperty,
+                    Color.Lerp(_normalPreset.Layer3.Color, _bassGroovePreset.Layer3.Color, value));
+                _material.SetColor(_layer4ColorProperty,
+                    Color.Lerp(_normalPreset.Layer4.Color, _bassGroovePreset.Layer4.Color, value));
+
+                _material.SetFloat(_wavinessProperty, value);
+            }
+        }
+
         [HideInInspector]
         public bool GrooveMode;
+        [HideInInspector]
+        public bool BassGrooveMode;
         [HideInInspector]
         public bool StarpowerMode;
 
@@ -146,6 +197,26 @@ namespace YARG.Gameplay.Visuals
                     Color = FromHex("2C499E", 1f)
                 }
             };
+
+            _bassGroovePreset = new()
+            {
+                Layer1 = new()
+                {
+                    Color = FromHex("000988", 1f)
+                },
+                Layer2 = new()
+                {
+                    Color = FromHex("2334FF", 0.15f)
+                },
+                Layer3 = new()
+                {
+                    Color = FromHex("FFFFFF", 0f)
+                },
+                Layer4 = new()
+                {
+                    Color = FromHex("2C49FF", 1f)
+                }
+            };
         }
 
         public void Initialize(float fadePos, float fadeSize)
@@ -160,9 +231,17 @@ namespace YARG.Gameplay.Visuals
 
         private void Update()
         {
-            if (GrooveMode)
+            if (BassGrooveMode)
+            {
+                BassGrooveState = Mathf.Lerp(BassGrooveState, 1f, Time.deltaTime * 5f);
+            }
+            else if (GrooveMode)
             {
                 GrooveState = Mathf.Lerp(GrooveState, 1f, Time.deltaTime * 5f);
+            }
+            else if (_prevBassGrooveMode)
+            {
+                DropBassGrooveState = Mathf.Lerp(DropBassGrooveState, 0f, Time.deltaTime * 3f);
             }
             else
             {
@@ -177,6 +256,9 @@ namespace YARG.Gameplay.Visuals
             {
                 StarpowerState = Mathf.Lerp(StarpowerState, 0f, Time.deltaTime * 4f);
             }
+
+            // Use this to keep track of whether we're dropping a normal groove or bass groove
+            _prevBassGrooveMode = BassGrooveMode;
         }
 
         private static Color FromHex(string hex, float alpha)

@@ -130,6 +130,7 @@ namespace YARG.Settings
 
             public ToggleSetting ShowHitWindow            { get; } = new(false);
             public ToggleSetting DisableTextNotifications { get; } = new(false);
+            public ToggleSetting EnableSparseNoteStreaks  { get; } = new(false);
 
             public DropdownSetting SongTimeOnScoreBox { get; } = new(new()
             {

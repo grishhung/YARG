@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using YARG.Core;
 using YARG.Core.Engine;
 using YARG.Core.Game;
 
@@ -57,9 +58,9 @@ namespace YARG.Gameplay.HUD
             });
         }
 
-        public void UpdateNoteStreak(int streak)
+        public void UpdateTextNotification(BaseStats stats, bool isFc, int totalNotes, bool isBass)
         {
-            _textNotifications.UpdateNoteStreak(streak);
+            _textNotifications.UpdateTextNotification(stats, isFc, totalNotes, isBass);
         }
 
         public void ForceReset()
