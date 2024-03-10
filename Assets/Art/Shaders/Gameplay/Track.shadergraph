@@ -470,6 +470,9 @@
         },
         {
             "m_Id": "332440ba839a41c98d26e81e026fe2fb"
+        },
+        {
+            "m_Id": "1799a1ed55be452cb1a6c52d5e387218"
         }
     ],
     "m_GroupDatas": [
@@ -565,6 +568,20 @@
                     "m_Id": "bb37bf515eb148bf9d7bd848a18d0898"
                 },
                 "m_SlotId": -1761259065
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "1799a1ed55be452cb1a6c52d5e387218"
+                },
+                "m_SlotId": 1
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "b8d3b9174a6d444e9ed3ac576a4f4d8a"
+                },
+                "m_SlotId": 0
             }
         },
         {
@@ -3300,6 +3317,43 @@
         "w": 0.0
     },
     "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.SubGraphNode",
+    "m_ObjectId": "1799a1ed55be452cb1a6c52d5e387218",
+    "m_Group": {
+        "m_Id": ""
+    },
+    "m_Name": "Curve",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": 485.0,
+            "y": -458.0001220703125,
+            "width": 208.000244140625,
+            "height": 278.0001220703125
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "5cb29a0a202d4ed79d808c021a1e72cb"
+        }
+    ],
+    "synonyms": [],
+    "m_Precision": 0,
+    "m_PreviewExpanded": true,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    },
+    "m_SerializedSubGraph": "{\n    \"subGraph\": {\n        \"fileID\": -5475051401550479605,\n        \"guid\": \"d441c4bcd98d64633b2e2eb3137f46d2\",\n        \"type\": 3\n    }\n}",
+    "m_PropertyGuids": [],
+    "m_PropertyIds": [],
+    "m_Dropdowns": [],
+    "m_DropdownSelectedEntries": []
 }
 
 {
@@ -6893,6 +6947,31 @@
         "x": -2724.0,
         "y": 170.0
     }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector4MaterialSlot",
+    "m_ObjectId": "5cb29a0a202d4ed79d808c021a1e72cb",
+    "m_Id": 1,
+    "m_DisplayName": "Out_Vector4",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "OutVector4",
+    "m_StageCapability": 3,
+    "m_Value": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+    },
+    "m_Labels": []
 }
 
 {
