@@ -1,22 +1,16 @@
 ﻿using System.Collections;
 using Cysharp.Text;
-using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using YARG.Core.Chart;
 using YARG.Core.Game;
+using YARG.Localization;
 
 namespace YARG.Gameplay.HUD
 {
     public class VocalsPlayerHUD : GameplayBehaviour
     {
-        private const float ANIM_LENGTH = 1f;
-        private const float ANIM_BASE_TO_PEAK_INTERVAL = 0.167f;
-        private const float ANIM_PEAK_TO_VALLEY_INTERVAL = 0.167f;
-        private const float ANIM_PEAK_SCALE = 1.1f;
-        private const float ANIM_VALLEY_SCALE = 1f;
-
         [SerializeField]
         private Image _comboMeterFill;
         [SerializeField]
@@ -32,6 +26,7 @@ namespace YARG.Gameplay.HUD
 
         private float _comboMeterFillTarget;
 
+        private readonly PerformanceTextScaler _scaler = new(2f);
         private Coroutine _currentCoroutine;
 
         private bool _shouldPulse;
@@ -132,38 +127,28 @@ namespace YARG.Gameplay.HUD
 
         private IEnumerator ShowNextNotification(double hitPercent)
         {
-            _performanceText.text = hitPercent switch
+            string performanceKey = hitPercent switch
             {
-                >= 1f   => "AWESOME!",
-                >= 0.8f => "STRONG",
-                >= 0.7f => "GOOD",
-                >= 0.6f => "OKAY",
-                >= 0.1f => "MESSY",
-                _       => "AWFUL"
+                >= 1f   => "Awesome",
+                >= 0.8f => "Strong",
+                >= 0.7f => "Good",
+                >= 0.6f => "Okay",
+                >= 0.1f => "Messy",
+                _       => "Awful"
             };
 
-            _performanceText.transform.localScale = Vector3.zero;
+            _performanceText.text = Localize.Key($"Gameplay.Vocals.Performance.{performanceKey}");
 
-            const float animHoldInterval = ANIM_LENGTH
-                - 2f * (ANIM_BASE_TO_PEAK_INTERVAL + ANIM_PEAK_TO_VALLEY_INTERVAL);
+            _scaler.ResetAnimationTime();
 
-            yield return DOTween.Sequence()
-                .Append(DOTween.Sequence()
-                    .Append(_performanceText.transform
-                        .DOScale(ANIM_PEAK_SCALE, ANIM_BASE_TO_PEAK_INTERVAL)
-                        .SetEase(Ease.OutCirc))
-                    .Append(_performanceText.transform
-                        .DOScale(ANIM_VALLEY_SCALE, ANIM_PEAK_TO_VALLEY_INTERVAL)
-                        .SetEase(Ease.InOutSine))
-                    .AppendInterval(animHoldInterval))
-                .Append(DOTween.Sequence()
-                    .Append(_performanceText.transform
-                        .DOScale(ANIM_PEAK_SCALE, ANIM_PEAK_TO_VALLEY_INTERVAL)
-                        .SetEase(Ease.InOutSine))
-                    .Append(_performanceText.transform
-                        .DOScale(0f, ANIM_BASE_TO_PEAK_INTERVAL)
-                        .SetEase(Ease.InCirc)))
-                .WaitForCompletion();
+            while (_scaler.AnimTimeRemaining > 0f)
+            {
+                _scaler.AnimTimeRemaining -= Time.deltaTime;
+                float scale = _scaler.PerformanceTextScale();
+
+                _performanceText.transform.localScale = new Vector3(scale, scale, scale);
+                yield return null;
+            }
 
             _performanceText.text = string.Empty;
             _currentCoroutine = null;
