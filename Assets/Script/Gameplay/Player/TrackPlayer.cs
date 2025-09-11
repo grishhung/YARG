@@ -104,7 +104,9 @@ namespace YARG.Gameplay.Player
 
             // Move the HUD location based on the highway length
             var change = ZeroFadePosition - DEFAULT_ZERO_FADE_POS;
-            _hudLocation.position = _hudLocation.position.AddZ(change);
+            _hudLocation.position = _hudLocation.position
+                .WithX(HighwayCameraRendering.WorldToViewport(new Vector3(100f * index, 0f, 10f), index).x)
+                .AddZ(change);
 
             // Determine if a track is bass or not for the BASS GROOVE text notification
             IsBass = Player.Profile.CurrentInstrument
