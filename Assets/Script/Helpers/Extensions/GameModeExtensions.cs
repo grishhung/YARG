@@ -92,6 +92,8 @@ namespace YARG.Helpers.Extensions
                 },
                 GameMode.ProKeys => new()
                 {
+                    (ProfileSettingStrings.SHOW_BUTTON_LABELS, null),
+                    (ProfileSettingStrings.SHOW_BUTTON_PARTITION, null),
                     (ProfileSettingStrings.RANGE_DISABLE, "5-LANE RANGE SHIFT MARKERS")
                 },
                 _ => new()
@@ -145,6 +147,17 @@ namespace YARG.Helpers.Extensions
                             ProfileSettingStrings.SPLIT_TOM_AND_CYMBAL_LANES_IN_PRO_DRUMS,
                             (object value)=>(bool)value,
                             "SWAP CRASH AND RIDE LANES IN PRO DRUMS"
+                        )
+                    }
+                },
+                GameMode.ProKeys => new()
+                {
+                    {
+                        ProfileSettingStrings.BUTTON_PARTITION_POSITION,
+                        (
+                            ProfileSettingStrings.SHOW_BUTTON_PARTITION,
+                            (object value)=>(bool)value,
+                            "BUTTON PARTITION POSITION"
                         )
                     }
                 },

@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 using YARG.Assets.Script.Gameplay.Player;
 using YARG.Core.Chart;
 using YARG.Core.Engine;
 using YARG.Core.Engine.Keys;
+using YARG.Core.Game;
+using YARG.Core.Input;
 using YARG.Gameplay.Player;
 using YARG.Helpers.Extensions;
 using YARG.Themes;
@@ -13,6 +16,9 @@ namespace YARG.Gameplay.Visuals
 {
     public sealed class FiveLaneKeysNoteElement : NoteElement<GuitarNote, FiveLaneKeysPlayer>
     {
+        private readonly Dictionary<string, string> _friendlyLabelTextConversions = new() {
+            { "Space", "[_]" }
+        };
         private enum NoteType
         {
             Normal = 0,
@@ -88,6 +94,21 @@ namespace YARG.Gameplay.Visuals
             NoteGroup.SetActive(true);
             NoteGroup.Initialize();
 
+            // Set label text for gamepad/keyboard users
+            var action = NoteRef.Fret switch
+            {
+                7 => ProKeysAction.OpenNote,
+                1 => ProKeysAction.GreenKey,
+                2 => ProKeysAction.RedKey,
+                3 => ProKeysAction.YellowKey,
+                4 => ProKeysAction.BlueKey,
+                5 => ProKeysAction.OrangeKey,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+            string labelText = Player.Player.Bindings.GetControlLabel((int) action);
+            string friendlyLabelText = GetFriendlyLabelText(labelText);
+            NoteGroup.SetLabelText(Player.Player.Profile.ShowButtonLabels ? friendlyLabelText : "");
+
             // Set line length
             if (NoteRef.IsSustain)
             {
@@ -99,6 +120,11 @@ namespace YARG.Gameplay.Visuals
 
             // Set note and sustain color
             UpdateColor();
+        }
+
+        private string GetFriendlyLabelText(string labelText)
+        {
+            return _friendlyLabelTextConversions.GetValueOrDefault(labelText, labelText);
         }
 
         public override void HitNote()
@@ -168,9 +194,14 @@ namespace YARG.Gameplay.Visuals
                 ? colors.GetNoteStarPowerColor(NoteRef.Fret)
                 : colorNoStarPower;
 
+            var labelColor = NoteRef.IsStarPower
+                ? Color.Lerp(Color.white, ColorProfile.DefaultMetalStarPower.ToUnityColor(), 0.5f)
+                : Color.white;
+
             if (NoteRef.WasMissed)
             {
                 color = colors.Miss;
+                labelColor = colors.Miss.ToUnityColor();
             }
 
             // Set the note color
@@ -178,6 +209,9 @@ namespace YARG.Gameplay.Visuals
 
             // Set the metal color
             NoteGroup.SetMetalColor(colors.GetMetalColor(NoteRef.IsStarPower).ToUnityColor());
+
+            // Set the label color
+            NoteGroup.SetLabelColor(labelColor);
 
             // The rest of this method is for sustain only
             if (!NoteRef.IsSustain) return;

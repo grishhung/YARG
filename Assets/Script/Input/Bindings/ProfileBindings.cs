@@ -422,5 +422,23 @@ namespace YARG.Input
 
             RemoveMicrophone();
         }
+
+        public string GetControlLabel(int action)
+        {
+            // return "SANITY CHECK";
+            var gameMode = Profile.GameMode;
+            foreach (var binding in _bindsByGameMode[gameMode])
+            {
+                if (binding.Action == action && binding is ButtonBinding buttonBinding)
+                {
+                    // Use the first label only
+                    return buttonBinding.Bindings[0].Control.shortDisplayName
+                        ?? buttonBinding.Bindings[0].Control.displayName;
+                }
+            }
+
+            // Show nothing if nothing has been mapped
+            return "";
+        }
     }
 }

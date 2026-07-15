@@ -102,6 +102,16 @@ namespace YARG.Gameplay.Visuals
             }
         }
 
+        public void SetLabelText(string labelText)
+        {
+            _themeNote.SetLabelText(labelText);
+        }
+
+        public void SetLabelColor(Color color)
+        {
+            _themeNote.SetLabelColor(color);
+        }
+
         public void SetActive(bool a) => gameObject.SetActive(a);
 
         /// <summary>

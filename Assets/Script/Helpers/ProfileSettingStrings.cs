@@ -20,6 +20,9 @@ namespace YARG.Assets.Script.Helpers
         public const string NOTE_SPEED_AND_HIGHWAY_LENGTH = "Note Speed and Highway Length";
 
         // GameMode-specific
+        public const string SHOW_BUTTON_LABELS                      = "Show Button Labels";
+        public const string SHOW_BUTTON_PARTITION                   = "Show Button Partition";
+        public const string BUTTON_PARTITION_POSITION               = "Button Partition Position";
         public const string LEFTY_FLIP                              = "Lefty Flip";
         public const string RANGE_DISABLE                           = "Range Disable";
         public const string SPLIT_TOM_AND_CYMBAL_LANES_IN_PRO_DRUMS = "Split Tom and Cymbal Lanes in Pro Drums";

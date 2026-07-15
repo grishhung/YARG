@@ -90,6 +90,12 @@ namespace YARG.Menu.ProfileList
         private TMP_Dropdown _highwayPresetDropdown;
         [SerializeField]
         private TMP_Dropdown _rockMeterPresetDropdown;
+        [SerializeField]
+        private Toggle _showButtonLabels;
+        [SerializeField]
+        private Toggle _showButtonPartition;
+        [SerializeField]
+        private TMP_InputField _buttonPartitionPosition;
 
         [Space]
         [SerializeField]
@@ -193,6 +199,9 @@ namespace YARG.Menu.ProfileList
             _splitProTomsAndCymbals.isOn = profile.SplitProTomsAndCymbals;
             _swapSnareAndHiHat.isOn = profile.SwapSnareAndHiHat;
             _swapCrashAndRide.isOn = profile.SwapCrashAndRide;
+            _showButtonLabels.isOn = profile.ShowButtonLabels;
+            _showButtonPartition.isOn = profile.ShowButtonPartition;
+            _buttonPartitionPosition.text = profile.ButtonPartitionPosition.ToString(NUMBER_FORMAT, CultureInfo.CurrentCulture);
 
             // Update preset dropdowns
             _engineDropdown.SetValueWithoutNotify(
@@ -232,7 +241,8 @@ namespace YARG.Menu.ProfileList
             var possibleSettings = _profile.GameMode.PossibleProfileSettings(
                 new()
                 {
-                    { ProfileSettingStrings.SPLIT_TOM_AND_CYMBAL_LANES_IN_PRO_DRUMS, _profile.SplitProTomsAndCymbals }
+                    { ProfileSettingStrings.SPLIT_TOM_AND_CYMBAL_LANES_IN_PRO_DRUMS, _profile.SplitProTomsAndCymbals },
+                    { ProfileSettingStrings.SHOW_BUTTON_PARTITION, _profile.ShowButtonPartition },
                 });
 
             for (var i = 0; i < _sidebarContent.transform.childCount; i++)
@@ -423,6 +433,30 @@ namespace YARG.Menu.ProfileList
         public void ChangeStarPowerActivationType()
         {
             _profile.StarPowerActivationType = _starPowerActivationTypesByIndex[_starPowerActivationTypeDropdown.value];
+        }
+
+        public void ChangeShowButtonLabels()
+        {
+            _profile.ShowButtonLabels = _showButtonLabels.isOn;
+        }
+
+        public void ChangeShowButtonPartition()
+        {
+            _profile.ShowButtonPartition = _showButtonPartition.isOn;
+
+            // Allow position setting to surface
+            UpdateSidebar(_profile, _profileView);
+        }
+
+        public void ChangeButtonPartitionPosition()
+        {
+            if (float.TryParse(_buttonPartitionPosition.text, out var position))
+            {
+                _profile.ButtonPartitionPosition = Mathf.Clamp(position, 0f, 1f);
+            }
+
+            // Always format it after
+            _buttonPartitionPosition.text = _profile.ButtonPartitionPosition.ToString(NUMBER_FORMAT, CultureInfo.CurrentCulture);
         }
 
         public void ChangeTheme()

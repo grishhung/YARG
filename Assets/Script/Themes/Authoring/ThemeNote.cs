@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 namespace YARG.Themes
@@ -55,6 +56,24 @@ namespace YARG.Themes
             Gizmos.DrawLine(
                 transform.position.AddX(-0.4f),
                 transform.position.AddX(0.4f));
+        }
+
+        public void SetLabelText(string labelText)
+        {
+            var textMeshPros = GetComponentsInChildren<TextMeshPro>();
+            foreach (var tmp in textMeshPros)
+            {
+                tmp.text = labelText;
+            }
+        }
+
+        public void SetLabelColor(Color color)
+        {
+            var textMeshPros = GetComponentsInChildren<TextMeshPro>();
+            foreach (var tmp in textMeshPros)
+            {
+                tmp.color = color;
+            }
         }
     }
 }

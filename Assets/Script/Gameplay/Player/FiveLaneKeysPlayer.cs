@@ -39,6 +39,11 @@ namespace YARG.Assets.Script.Gameplay.Player
             0.21f, 0.50f, 0.90f, 2.77f, 4.62f, 6.78f
         };
 
+        private static float[] DrumsStarMultiplierThresholds => new[]
+        {
+            0.21f, 0.46f, 0.77f, 1.85f, 3.08f, 4.29f
+        };
+
         public KeysEngineParameters EngineParams { get; private set; }
 
         private FiveFretRangeShift[] _allRangeShiftEvents;
@@ -71,6 +76,10 @@ namespace YARG.Assets.Script.Gameplay.Player
         private SongStem _stem;
         private double _practiceSectionStartTime;
 
+        // This position refers to the x offset, not the z offset indicated by the strikeline position
+        private static readonly int ButtonPartitionEnabled = Shader.PropertyToID("_Button_Partition_Enabled");
+        private static readonly int ButtonPartitionPosition = Shader.PropertyToID("_Button_Partition_Position");
+
         public override void Initialize(int index, YargPlayer player, SongChart chart, TrackView trackView, StemMixer mixer, int? currentHighScore)
         {
             _stem = player.Profile.CurrentInstrument.ToSongStem();
@@ -89,17 +98,19 @@ namespace YARG.Assets.Script.Gameplay.Player
 
         protected override FiveLaneKeysEngine CreateEngine()
         {
-            // If on bass, replace the star multiplier threshold
-            bool isBass = Player.Profile.CurrentInstrument == Instrument.FiveFretBass;
-            if (isBass)
+            // Replace the star multiplier threshold depending on the instrument
+            var instrument = Player.Profile.CurrentInstrument;
+            StarMultiplierThresholds = instrument switch
             {
-                StarMultiplierThresholds = BassStarMultiplierThresholds;
-            }
+                Instrument.FiveFretBass  => BassStarMultiplierThresholds,
+                Instrument.FourLaneDrums => DrumsStarMultiplierThresholds,
+                _                        => GuitarStarMultiplierThresholds,
+            };
 
             if (!Player.IsReplay)
             {
                 // Create the engine params from the engine preset
-                EngineParams = Player.EnginePreset.ProKeys.Create(StarMultiplierThresholds, isBass);
+                EngineParams = Player.EnginePreset.ProKeys.Create(StarMultiplierThresholds, instrument == Instrument.FiveFretBass);
                 //EngineParams = EnginePreset.Precision.FiveFretGuitar.Create(StarMultiplierThresholds, isBass);
             }
             else
@@ -159,6 +170,11 @@ namespace YARG.Assets.Script.Gameplay.Player
             }
 
             GameManager.BeatEventHandler.Visual.Subscribe(_fretArray.PulseFretColors, BeatEventType.StrongBeat);
+
+            // Set up properties that we couldn't do at the material level
+            var material = GameObject.Find("Track").GetComponent<TrackMaterial>()._trackMesh.materials[0];
+            material.SetInt(ButtonPartitionEnabled, Player.Profile.ShowButtonPartition ? 1 : 0);
+            material.SetFloat(ButtonPartitionPosition, Player.Profile.ButtonPartitionPosition);
         }
 
         public override void ResetPracticeSection()

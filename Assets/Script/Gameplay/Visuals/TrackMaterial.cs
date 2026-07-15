@@ -23,6 +23,9 @@ namespace YARG.Gameplay.Visuals
 
         private static readonly int _starPowerColorProperty = Shader.PropertyToID("_Starpower_Color");
 
+        // Refers to the z position of the strikeline
+        private static readonly int _strikelinePosition = Shader.PropertyToID("_Strikeline_Position");
+
         public struct Preset
         {
             public Color Layer1;
@@ -104,7 +107,7 @@ namespace YARG.Gameplay.Visuals
         }
 
         [SerializeField]
-        private MeshRenderer _trackMesh;
+        public MeshRenderer _trackMesh;
 
         [SerializeField]
         private MeshRenderer[] _trackTrims;
@@ -164,6 +167,9 @@ namespace YARG.Gameplay.Visuals
             {
                 StarpowerState = Mathf.Lerp(StarpowerState, 0f, Time.deltaTime * 4f);
             }
+
+            // Make the fade in the button partition also move during strikeline animations
+            _material.SetFloat(_strikelinePosition, GameObject.Find("Strikeline").transform.position.z);
         }
 
         private static Color FromHex(string hex, float alpha)
